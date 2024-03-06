@@ -1,0 +1,217 @@
+{% extends 'base.html' %} 
+{% block title %} Article Detail {% endblock title %}
+{% block content %}
+<main id="main">
+  <!-- ======= Breadcrumbs ======= -->
+  <section id="breadcrumbs" class="breadcrumbs">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>{{article.title|title}}</h2>
+        <ol>
+          <li><a href="{% url 'article:home' %}">Home</a></li>
+          <li><a>Blog</a></li>
+          <li>Detail</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <!-- End Breadcrumbs -->
+
+  <!-- ======= Blog Single Section ======= -->
+  <section id="blog" class="blog">
+    <div class="container" data-aos="fade-up">
+      <div class="row">
+        <div class="col-lg-8 entries">
+          <article class="entry entry-single">
+            <div class="entry-img">
+              <img
+                src="{{article.image_headline_url}}"
+                alt=""
+                class="img-fluid"
+              />
+            </div>
+
+            <h2 class="entry-title">
+              <a href="blog-single.html">{{article.title|title}}</a>
+            </h2>
+
+            <div class="entry-meta">
+              <ul>
+                <li class="d-flex align-items-center">
+                  <i class="bi bi-person"></i>
+                  <a href="blog-single.html"
+                    >{{article.author.user.first_name|title}}
+                    {{article.author.user.last_name|title}}</a
+                  >
+                </li>
+                <li class="d-flex align-items-center">
+                  <i class="bi bi-clock"></i>
+                  <a href="blog-single.html"
+                    ><time datetime="2020-01-01"
+                      >{{article.created_on}}</time
+                    ></a
+                  >
+                </li>
+                <li class="d-flex align-items-center">
+                  <i class="bi bi-chat-dots"></i>
+                  <a href="blog-single.html"
+                    >{{article.comment_set.count}}
+                    Comment{{article.comment_set.count|pluralize }}</a
+                  >
+                </li>
+
+                {% if request.user == article.author.user %}
+
+                <li class="d-flex align-items-center">
+                  <i class="bi bi-chat-dots"></i>
+                  <a
+                    href="{% url 'article:update-article' article.slug %}"
+                    class="text-primary"
+                    >Update</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+
+            <div class="entry-content">{{article.content|safe}}</div>
+
+            <div class="entry-footer">
+              <i class="bi bi-folder"></i>
+              <ul class="cats">
+                <li><a href="#">{{article.category}}</a></li>
+              </ul>
+
+              <i class="bi bi-tags"></i>
+              <ul class="tags">
+                {% for tag in article.tags_set.all %}
+
+                <li><a href="#">{{tag.name}}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </article>
+          <!-- End blog entry -->
+
+          <div class="blog-author d-flex align-items-center">
+            <img
+              src="{{article.author.profile_pic_url}}"
+              class="rounded-circle float-left"
+              alt=""
+            />
+            <div>
+              <h4>
+                {{article.author.user.first_name|title}}
+                {{article.author.user.last_name|title}}
+              </h4>
+              <div class="social-links">
+                <a href="https://twitters.com/#"
+                  ><i class="bi bi-twitter"></i
+                ></a>
+                <a href="https://facebook.com/#"
+                  ><i class="bi bi-facebook"></i
+                ></a>
+                <a href="https://instagram.com/#"
+                  ><i class="biu bi-instagram"></i
+                ></a>
+              </div>
+              <p>{{article.author.bio|title}}</p>
+            </div>
+          </div>
+          <!-- End blog author bio -->
+
+          <div class="blog-comments">
+            {% include 'messages.html' %}
+            <h4 class="comments-count">
+              {{article.comment_set.count}}
+              Comment{{article.comment_set.count|pluralize }}
+            </h4>
+
+            {% for comment in article.comment_set.all %}
+
+            <div id="comment-1" class="comment">
+              <div class="d-flex">
+                <div class="comment-img">
+                  <img src="{{comment.author.profile_pic_url}}" alt="" />
+                </div>
+                <div>
+                  <h5>
+                    <a href="" class="flex"
+                      >{{comment.author.user.first_name}}
+                      {{comment.author.user.last_name}}
+                    </a>
+                  </h5>
+
+                  {% if comment.author.user == request.user %}
+
+                  <form
+                    action="{% url 'comments:delete-comment'  %}"
+                    method="POST"
+                  >
+                    {% csrf_token %}
+                    <input
+                      type="hidden"
+                      name="comment_slug"
+                      value="{{comment.slug}}"
+                    />
+                    <input
+                      type="hidden"
+                      name="article_slug"
+                      value="{{article.slug}}"
+                    />
+                    <button class="btn btn-danger btn-sm" type="submit">
+                      Delete Comment
+                    </button>
+                  </form>
+
+                  {% endif %}
+
+                  <time datetime="2020-01-01">{{comment.created_on}}</time>
+                  <p>{{comment.content}}</p>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+
+            <!-- End comment #1 -->
+
+            {% if request.user.is_authenticated %}
+
+            <div class="reply-form">
+              <h4>Leave a Reply</h4>
+              <p>
+                Your email address will not be published. Required fields are
+                marked *
+              </p>
+              <form action="{% url 'comments:create-comment' %}" method="POST">
+                <input
+                  type="hidden"
+                  name="article_id"
+                  value="{{article.pkid}}"
+                />
+                <input
+                  type="hidden"
+                  name="article_slug"
+                  value="{{article.slug}}"
+                />
+                {% csrf_token %} {{form.as_p}}
+                <button type="submit" class="btn btn-primary">
+                  Post Comment
+                </button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
+          <!-- End blog comments -->
+        </div>
+        <!-- End blog entries list -->
+
+        {% include 'sidebar.html' %}
+        <!-- End blog sidebar -->
+      </div>
+    </div>
+  </section>
+  <!-- End Blog Single Section -->
+</main>
+<!-- End #main -->
+{% endblock content %}

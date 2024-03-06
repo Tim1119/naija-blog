@@ -1,0 +1,57 @@
+{% load static %}
+<div class="col-lg-4">
+  <div class="sidebar">
+    <h3 class="sidebar-title">Search</h3>
+    <div class="sidebar-item search-form">
+      <form action="{% url 'article:search-article' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="search_query" />
+        <button type="submit"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
+    <!-- End sidebar search formn-->
+
+    <h3 class="sidebar-title">Categories</h3>
+    <div class="sidebar-item categories">
+      <ul>
+        {% for category in categories %}
+
+        <li>
+          <a href="{% url 'article:view-article-by-category' category.slug %}"
+            >{{category.name}} <span>{{category.article_set.count}}</span></a
+          >
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <!-- End sidebar categories-->
+
+    <h3 class="sidebar-title">Recent Posts</h3>
+    <div class="sidebar-item recent-posts">
+      {% for article in recent_articles %}
+
+      <div class="post-item clearfix">
+        <img src="{{article.image_headline_url}}" alt="" />
+        <h4>
+          <a href="{% url 'article:article-detail' article.slug %}"
+            >{{article.title|title}}</a
+          >
+        </h4>
+        <time datetime="2020-01-01">{{article.created_on}}</time>
+      </div>
+      {% endfor %}
+
+      <h3 class="sidebar-title">Tags</h3>
+      <div class="sidebar-item tags">
+        <ul>
+          {% for tag in tags %}
+
+          <li><a href="#">{{tag.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <!-- End sidebar tags-->
+    </div>
+    <!-- End sidebar -->
+  </div>
+</div>

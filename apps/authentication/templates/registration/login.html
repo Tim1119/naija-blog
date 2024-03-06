@@ -1,0 +1,37 @@
+{% extends 'base_registration.html' %} {% load static %} {% block title %} Login
+{% endblock title %}{% block content %}
+
+<link rel="stylesheet" href="{% static 'assets/css/auth_style.css' %}" />
+
+<div class="container mt-3 mb-3">
+  <main id="main container mt-3 mb-3">
+    <div class="container text-center">
+      <h1 class="logo me-auto base-auth-title">
+        Login to your <span class="naija">Naija Blog</span> Account
+      </h1>
+      <small>Enter your username & password to create account</small>
+    </div>
+    <div class="container" data-aos="fade-up">
+      {% include 'messages.html' %}
+      <form
+        action=""
+        class="form-group"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %} {{form.as_p}}
+        <p>
+          Don't have account?
+          <a href="{% url 'authentication:registration' %}"
+            >Create an account</a
+          >
+        </p>
+        <div class="container d-flex justify-content-center">
+          <button class="btn btn-success mx-auto btn-block">Submit</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+{% endblock content %}
